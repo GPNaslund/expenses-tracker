@@ -27,10 +27,11 @@ public class AuthRouterTest {
 	}
 
 	@Test
-	public void shouldCallLoginHandler() {
+	public void shouldCallAuthHandlerOnLoginPost() {
 		webTestClient.post().uri("/auth/login")
 				.exchange()
 				.expectStatus().isOk();
 		Mockito.verify(authHandler).login(ArgumentMatchers.any(ServerRequest.class));
 	}
+
 }
