@@ -13,6 +13,7 @@ public class AuthRouter {
 	public RouterFunction<ServerResponse> authRoutes(AuthHandler handler) {
 		return RouterFunctions.route()
 				.POST("auth/login", handler::login)
+				.POST("auth/logout", handler::logout)
 				.build();
 	}
 }

@@ -8,7 +8,12 @@ import reactor.core.publisher.Mono;
 
 @Component
 public class AuthHandler {
+
 	public Mono<ServerResponse> login(ServerRequest req) {
+		return Mono.empty();
+	}
+
+	public Mono<ServerResponse> logout(ServerRequest req) {
 		return Mono.empty();
 	}
 }

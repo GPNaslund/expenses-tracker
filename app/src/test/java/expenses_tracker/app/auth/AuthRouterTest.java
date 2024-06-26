@@ -24,6 +24,8 @@ public class AuthRouterTest {
 	public void setup() {
 		Mockito.when(authHandler.login(ArgumentMatchers.any(ServerRequest.class)))
 				.thenReturn(Mono.empty());
+		Mockito.when(authHandler.logout(ArgumentMatchers.any(ServerRequest.class)))
+				.thenReturn(Mono.empty());
 	}
 
 	@Test
