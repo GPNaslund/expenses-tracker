@@ -34,7 +34,7 @@ public class AuthHandlerTest {
 	}
 
 	@Test
-	public void shouldReturn200OnValidCredentials() {
+	public void shouldReturn200OnLoginWithValidCredentials() {
 		RegisteredUser user = new RegisteredUser();
 		Mockito.when(service.validateCredentials(ArgumentMatchers.any(UserCredentials.class)))
 				.thenReturn(Mono.just(user));
@@ -53,7 +53,7 @@ public class AuthHandlerTest {
 	}
 
 	@Test
-	public void shouldReturn400OnInvalidCredentials() {
+	public void shouldReturn401OnLoginWithInvalidCredentials() {
 		Mockito.when(service.validateCredentials(ArgumentMatchers.any(UserCredentials.class)))
 				.thenReturn(Mono.empty());
 
@@ -67,6 +67,21 @@ public class AuthHandlerTest {
 		StepVerifier.create(res)
 				.expectNextMatches(serverResponse -> serverResponse.statusCode()
 						.equals(HttpStatus.UNAUTHORIZED))
+				.verifyComplete();
+	}
+
+	@Test
+	public void shouldReturn400OnLoginWithInvalidRequest() {
+		ServerRequest req = MockServerRequest.builder()
+				.method(org.springframework.http.HttpMethod.POST)
+				.uri(URI.create("/test"))
+				.body(Mono.just("Test"));
+
+		Mono<ServerResponse> res = sut.login(req);
+
+		StepVerifier.create(res)
+				.expectNextMatches(serverResponse -> serverResponse.statusCode()
+						.equals(HttpStatus.BAD_REQUEST))
 				.verifyComplete();
 	}
 }
