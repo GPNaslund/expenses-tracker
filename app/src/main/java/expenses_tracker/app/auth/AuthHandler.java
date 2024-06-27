@@ -20,8 +20,8 @@ public class AuthHandler {
 	public Mono<ServerResponse> login(ServerRequest req) {
 		Mono<UserCredentials> body = req.bodyToMono(UserCredentials.class);
 		return body.flatMap(credentials -> {
-			service.validateCredentials(credentials);
-			return ServerResponse.status(HttpStatus.OK).build();
+			return service.validateCredentials(credentials)
+					.flatMap(user -> ServerResponse.status(HttpStatus.OK).bodyValue(user));
 		});
 	}
 
