@@ -5,27 +5,27 @@ import java.net.URI;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.springframework.core.io.buffer.DataBuffer;
-import org.springframework.core.io.buffer.DefaultDataBufferFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.mock.web.reactive.function.server.MockServerRequest;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
-import io.netty.handler.codec.http.HttpMethod;
+import expenses_tracker.app.model.RegisteredUser;
+import expenses_tracker.app.model.UserCredentials;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+@WebFluxTest(AuthHandler.class)
 public class AuthHandlerTest {
-	@Mock
+	@MockBean
 	private AuthService service;
 
-	@InjectMocks
+	@Autowired
 	private AuthHandler sut;
 
 	@BeforeEach
@@ -34,22 +34,21 @@ public class AuthHandlerTest {
 	}
 
 	@Test
-	public void shouldReturn201OnValidCredentials() {
-		Mockito.when(service.login(ArgumentMatchers.any(UserCredentials.class))
-				.thenReturn(Mono.just(ArgumentMatchers.any(RegisteredUser.class))));
+	public void shouldReturn200OnValidCredentials() {
+		RegisteredUser user = new RegisteredUser();
+		Mockito.when(service.validateCredentials(ArgumentMatchers.any(UserCredentials.class)))
+				.thenReturn(Mono.just(user));
 
-		String jsonBody = "{\"username\": \"test\", \"password\":\"test\"}";
-		DataBuffer buffer = new DefaultDataBufferFactory().wrap(jsonBody.getBytes());
 		ServerRequest req = MockServerRequest.builder()
 				.method(org.springframework.http.HttpMethod.POST)
 				.uri(URI.create("/test"))
-				.body(Mono.just(buffer));
+				.body(Mono.just(new UserCredentials("test", "test")));
 
 		Mono<ServerResponse> res = sut.login(req);
 
 		StepVerifier.create(res)
 				.expectNextMatches(serverResponse -> serverResponse.statusCode()
-						.equals(HttpStatus.CREATED))
+						.equals(HttpStatus.OK))
 				.verifyComplete();
 	}
 }
