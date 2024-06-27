@@ -51,4 +51,22 @@ public class AuthHandlerTest {
 						.equals(HttpStatus.OK))
 				.verifyComplete();
 	}
+
+	@Test
+	public void shouldReturn400OnInvalidCredentials() {
+		Mockito.when(service.validateCredentials(ArgumentMatchers.any(UserCredentials.class)))
+				.thenReturn(Mono.empty());
+
+		ServerRequest req = MockServerRequest.builder()
+				.method(org.springframework.http.HttpMethod.POST)
+				.uri(URI.create("/test"))
+				.body(Mono.just(new UserCredentials("test", "test")));
+
+		Mono<ServerResponse> res = sut.login(req);
+
+		StepVerifier.create(res)
+				.expectNextMatches(serverResponse -> serverResponse.statusCode()
+						.equals(HttpStatus.UNAUTHORIZED))
+				.verifyComplete();
+	}
 }
