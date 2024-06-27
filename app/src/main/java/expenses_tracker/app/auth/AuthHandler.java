@@ -21,7 +21,8 @@ public class AuthHandler {
 		Mono<UserCredentials> body = req.bodyToMono(UserCredentials.class);
 		return body.flatMap(credentials -> {
 			return service.validateCredentials(credentials)
-					.flatMap(user -> ServerResponse.status(HttpStatus.OK).bodyValue(user));
+					.flatMap(user -> ServerResponse.status(HttpStatus.OK).bodyValue(user))
+					.switchIfEmpty(ServerResponse.status(HttpStatus.UNAUTHORIZED).build());
 		});
 	}
 
