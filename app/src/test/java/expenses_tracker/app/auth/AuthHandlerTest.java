@@ -10,7 +10,6 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpCookie;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.reactive.function.server.MockServerRequest;
 import org.springframework.util.MultiValueMap;
@@ -40,65 +39,27 @@ public class AuthHandlerTest {
 		RegisteredUser user = new RegisteredUser();
 		Mockito.when(service.validateCredentials(ArgumentMatchers.any(UserCredentials.class)))
 				.thenReturn(Mono.just(user));
-
-		ServerRequest req = MockServerRequest.builder()
-				.method(org.springframework.http.HttpMethod.POST)
-				.uri(URI.create("/test"))
-				.body(Mono.just(new UserCredentials("test", "test")));
-
-		Mono<ServerResponse> res = sut.login(req);
-
-		StepVerifier.create(res)
-				.expectNextMatches(serverResponse -> serverResponse.statusCode()
-						.equals(HttpStatus.OK))
-				.verifyComplete();
+		UserCredentials credentials = new UserCredentials("test", "test");
+		authHandlerTester(AuthHandlerMethod.LOGIN, Mono.just(credentials), HttpStatus.OK);
 	}
 
 	@Test
 	public void shouldReturn401OnLoginWithInvalidCredentials() {
 		Mockito.when(service.validateCredentials(ArgumentMatchers.any(UserCredentials.class)))
 				.thenReturn(Mono.empty());
+		UserCredentials credentials = new UserCredentials("test", "test");
 
-		ServerRequest req = MockServerRequest.builder()
-				.method(org.springframework.http.HttpMethod.POST)
-				.uri(URI.create("/test"))
-				.body(Mono.just(new UserCredentials("test", "test")));
-
-		Mono<ServerResponse> res = sut.login(req);
-
-		StepVerifier.create(res)
-				.expectNextMatches(serverResponse -> serverResponse.statusCode()
-						.equals(HttpStatus.UNAUTHORIZED))
-				.verifyComplete();
+		authHandlerTester(AuthHandlerMethod.LOGIN, Mono.just(credentials), HttpStatus.UNAUTHORIZED);
 	}
 
 	@Test
 	public void shouldReturn400OnLoginWithInvalidRequest() {
-		ServerRequest req = MockServerRequest.builder()
-				.method(org.springframework.http.HttpMethod.POST)
-				.uri(URI.create("/test"))
-				.body(Mono.just("Test"));
-
-		Mono<ServerResponse> res = sut.login(req);
-
-		StepVerifier.create(res)
-				.expectNextMatches(serverResponse -> serverResponse.statusCode()
-						.equals(HttpStatus.BAD_REQUEST))
-				.verifyComplete();
+		authHandlerTester(AuthHandlerMethod.LOGIN, Mono.empty(), HttpStatus.BAD_REQUEST);
 	}
 
 	@Test
 	public void shouldReturn200OnSuccessfulLogout() {
-		ServerRequest req = MockServerRequest.builder()
-				.method(org.springframework.http.HttpMethod.POST)
-				.uri(URI.create("/test"))
-				.body(Mono.empty());
-
-		Mono<ServerResponse> res = sut.logout(req);
-
-		StepVerifier.create(res)
-				.expectNextMatches(serverResponse -> serverResponse.statusCode().equals(HttpStatus.OK))
-				.verifyComplete();
+		authHandlerTester(AuthHandlerMethod.LOGOUT, Mono.empty(), HttpStatus.OK);
 	}
 
 	@Test
@@ -106,16 +67,27 @@ public class AuthHandlerTest {
 		Mockito.doThrow(new IllegalArgumentException())
 				.when(service).terminateSession(ArgumentMatchers.any(MultiValueMap.class));
 
+		authHandlerTester(AuthHandlerMethod.LOGOUT, Mono.empty(), HttpStatus.BAD_REQUEST);
+	}
+
+	private <T> void authHandlerTester(AuthHandlerMethod method, Mono<T> bodyVal, HttpStatus expectedStatus) {
 		ServerRequest req = MockServerRequest.builder()
 				.method(org.springframework.http.HttpMethod.POST)
 				.uri(URI.create("/test"))
-				.body(Mono.empty());
+				.body(bodyVal);
 
-		Mono<ServerResponse> res = sut.logout(req);
+		Mono<ServerResponse> res;
+
+		if (method == AuthHandlerMethod.LOGIN) {
+			res = sut.login(req);
+		} else {
+			res = sut.logout(req);
+		}
 
 		StepVerifier.create(res)
 				.expectNextMatches(serverResponse -> serverResponse.statusCode()
-						.equals(HttpStatus.BAD_REQUEST));
+						.equals(expectedStatus))
+				.verifyComplete();
 	}
 
 }
