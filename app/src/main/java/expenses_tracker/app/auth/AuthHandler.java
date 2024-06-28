@@ -33,7 +33,11 @@ public class AuthHandler {
 
 	public Mono<ServerResponse> logout(ServerRequest req) {
 		MultiValueMap<String, HttpCookie> cookies = req.cookies();
-		service.terminateSession(cookies);
-		return ServerResponse.status(HttpStatus.OK).build();
+		try {
+			service.terminateSession(cookies);
+			return ServerResponse.status(HttpStatus.OK).build();
+		} catch (IllegalArgumentException e) {
+			return ServerResponse.status(HttpStatus.BAD_REQUEST).build();
+		}
 	}
 }
