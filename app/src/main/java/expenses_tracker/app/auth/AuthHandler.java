@@ -1,7 +1,9 @@
 package expenses_tracker.app.auth;
 
+import org.springframework.http.HttpCookie;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
@@ -30,6 +32,8 @@ public class AuthHandler {
 	}
 
 	public Mono<ServerResponse> logout(ServerRequest req) {
-		return Mono.empty();
+		MultiValueMap<String, HttpCookie> cookies = req.cookies();
+		service.terminateSession(cookies);
+		return ServerResponse.status(HttpStatus.OK).build();
 	}
 }
