@@ -23,7 +23,10 @@ public class AuthHandler {
 			return service.validateCredentials(credentials)
 					.flatMap(user -> ServerResponse.status(HttpStatus.OK).bodyValue(user))
 					.switchIfEmpty(ServerResponse.status(HttpStatus.UNAUTHORIZED).build());
-		});
+		})
+				.switchIfEmpty(ServerResponse.status(HttpStatus.BAD_REQUEST).build())
+				.onErrorResume(ClassCastException.class,
+						e -> ServerResponse.status(HttpStatus.BAD_REQUEST).build());
 	}
 
 	public Mono<ServerResponse> logout(ServerRequest req) {
