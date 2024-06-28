@@ -84,4 +84,18 @@ public class AuthHandlerTest {
 						.equals(HttpStatus.BAD_REQUEST))
 				.verifyComplete();
 	}
+
+	@Test
+	public void shouldReturn200OnSuccessfulLogout() {
+		ServerRequest req = MockServerRequest.builder()
+				.method(org.springframework.http.HttpMethod.POST)
+				.uri(URI.create("/test"))
+				.body(Mono.empty());
+
+		Mono<ServerResponse> res = sut.logout(req);
+
+		StepVerifier.create(res)
+				.expectNextMatches(serverResponse -> serverResponse.statusCode().equals(HttpStatus.OK))
+				.verifyComplete();
+	}
 }
