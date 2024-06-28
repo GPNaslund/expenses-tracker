@@ -10,8 +10,10 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpCookie;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.reactive.function.server.MockServerRequest;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
@@ -98,4 +100,22 @@ public class AuthHandlerTest {
 				.expectNextMatches(serverResponse -> serverResponse.statusCode().equals(HttpStatus.OK))
 				.verifyComplete();
 	}
+
+	@Test
+	public void shouldReturn400OnInvalidLogout() {
+		Mockito.doThrow(new IllegalArgumentException())
+				.when(service).terminateSession(ArgumentMatchers.any(MultiValueMap.class));
+
+		ServerRequest req = MockServerRequest.builder()
+				.method(org.springframework.http.HttpMethod.POST)
+				.uri(URI.create("/test"))
+				.body(Mono.empty());
+
+		Mono<ServerResponse> res = sut.logout(req);
+
+		StepVerifier.create(res)
+				.expectNextMatches(serverResponse -> serverResponse.statusCode()
+						.equals(HttpStatus.BAD_REQUEST));
+	}
+
 }
