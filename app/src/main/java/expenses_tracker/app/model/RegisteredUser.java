@@ -1,7 +1,6 @@
 package expenses_tracker.app.model;
 
 public class RegisteredUser {
-	private Long id;
 
 	private String username;
 	private String password;
@@ -17,5 +16,20 @@ public class RegisteredUser {
 
 	public String getPassword() {
 		return this.password;
+	}
+
+	@Override
+	public boolean equals(Object other) {
+		if (other == this) {
+			return true;
+		}
+
+		if (!(other instanceof RegisteredUser)) {
+			return false;
+		}
+
+		RegisteredUser o = (RegisteredUser) other;
+
+		return this.username.equals(o.getUsername()) && this.password.equals(o.getPassword());
 	}
 }
