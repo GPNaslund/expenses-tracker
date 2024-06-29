@@ -41,7 +41,7 @@ public class AuthServiceTest {
 	}
 
 	@Test
-	void shouldReturnEmptyMonoOnInvalidCredentials() {
+	void shouldReturnEmptyMonoOnInvalidPassword() {
 		RegisteredUser user = new RegisteredUser("test", "correct");
 		Mockito.when(repo.getByUsername("test")).thenReturn(Mono.just(user));
 

@@ -18,7 +18,13 @@ public class AuthService {
 	}
 
 	public Mono<RegisteredUser> validateCredentials(UserCredentials credentials) {
-		return repo.getByUsername(credentials.getUsername());
+		Mono<RegisteredUser> registeredUser = repo.getByUsername(credentials.getUsername());
+		return registeredUser.flatMap(user -> {
+			if (credentials.getPassword().equals(user.getPassword())) {
+				return registeredUser;
+			}
+			return Mono.empty();
+		});
 	}
 
 	public void terminateSession(MultiValueMap<String, HttpCookie> cookies) throws IllegalArgumentException {
