@@ -36,7 +36,7 @@ public class AuthHandlerTest {
 
 	@Test
 	public void shouldReturn200OnLoginWithValidCredentials() {
-		RegisteredUser user = new RegisteredUser();
+		RegisteredUser user = new RegisteredUser("test", "test");
 		Mockito.when(service.validateCredentials(ArgumentMatchers.any(UserCredentials.class)))
 				.thenReturn(Mono.just(user));
 		UserCredentials credentials = new UserCredentials("test", "test");

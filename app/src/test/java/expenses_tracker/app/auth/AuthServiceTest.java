@@ -1,0 +1,42 @@
+package expenses_tracker.app.auth;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+
+import expenses_tracker.app.model.RegisteredUser;
+import expenses_tracker.app.model.UserCredentials;
+import expenses_tracker.app.repository.RegisteredUserRepository;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
+
+@WebFluxTest(AuthService.class)
+public class AuthServiceTest {
+	@MockBean
+	private RegisteredUserRepository repo;
+
+	@Autowired
+	private AuthService sut;
+
+	@BeforeEach
+	public void setUp() {
+		MockitoAnnotations.openMocks(this);
+	}
+
+	@Test
+	public void shouldReturnUserOnValidCredentials() {
+		RegisteredUser user = new RegisteredUser("test", "test");
+		Mockito.when(repo.getByUsername("test")).thenReturn(Mono.just(user));
+
+		UserCredentials credentials = new UserCredentials("test", "test");
+		Mono<RegisteredUser> returnedUser = sut.validateCredentials(credentials);
+
+		StepVerifier.create(returnedUser)
+				.expectNext(user)
+				.verifyComplete();
+	}
+}
