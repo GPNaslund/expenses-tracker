@@ -41,7 +41,7 @@ public class AuthServiceTest {
 	}
 
 	@Test
-	void shouldReturnEmptyMonoOnInvalidPassword() {
+	public void shouldReturnEmptyMonoOnInvalidPassword() {
 		RegisteredUser user = new RegisteredUser("test", "correct");
 		Mockito.when(repo.getByUsername("test")).thenReturn(Mono.just(user));
 
@@ -52,5 +52,17 @@ public class AuthServiceTest {
 				.expectNextCount(0)
 				.verifyComplete();
 
+	}
+
+	@Test
+	public void shouldReturnEmptyMonoOnInvalidUsername() {
+		Mockito.when(repo.getByUsername("test")).thenReturn(Mono.empty());
+
+		UserCredentials credentials = new UserCredentials("test", "test");
+		Mono<RegisteredUser> returnedUser = sut.validateCredentials(credentials);
+
+		StepVerifier.create(returnedUser)
+				.expectNextCount(0)
+				.verifyComplete();
 	}
 }
