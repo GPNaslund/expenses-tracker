@@ -39,4 +39,18 @@ public class AuthServiceTest {
 				.expectNext(user)
 				.verifyComplete();
 	}
+
+	@Test
+	void shouldReturnEmptyMonoOnInvalidCredentials() {
+		RegisteredUser user = new RegisteredUser("test", "correct");
+		Mockito.when(repo.getByUsername("test")).thenReturn(Mono.just(user));
+
+		UserCredentials credentials = new UserCredentials("test", "wrong");
+		Mono<RegisteredUser> returnedUser = sut.validateCredentials(credentials);
+
+		StepVerifier.create(returnedUser)
+				.expectNextCount(0)
+				.verifyComplete();
+
+	}
 }
