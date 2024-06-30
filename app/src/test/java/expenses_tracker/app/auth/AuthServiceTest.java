@@ -65,4 +65,5 @@ public class AuthServiceTest {
 				.expectNextCount(0)
 				.verifyComplete();
 	}
+
 }

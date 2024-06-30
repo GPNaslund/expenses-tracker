@@ -1,8 +1,6 @@
 package expenses_tracker.app.auth;
 
-import org.springframework.http.HttpCookie;
 import org.springframework.stereotype.Service;
-import org.springframework.util.MultiValueMap;
 
 import expenses_tracker.app.model.RegisteredUser;
 import expenses_tracker.app.model.UserCredentials;
@@ -27,7 +25,4 @@ public class AuthService {
 		});
 	}
 
-	public void terminateSession(MultiValueMap<String, HttpCookie> cookies) throws IllegalArgumentException {
-
-	}
 }

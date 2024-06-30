@@ -1,9 +1,7 @@
 package expenses_tracker.app.auth;
 
-import org.springframework.http.HttpCookie;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
@@ -31,13 +29,4 @@ public class AuthHandler {
 						e -> ServerResponse.status(HttpStatus.BAD_REQUEST).build());
 	}
 
-	public Mono<ServerResponse> logout(ServerRequest req) {
-		MultiValueMap<String, HttpCookie> cookies = req.cookies();
-		try {
-			service.terminateSession(cookies);
-			return ServerResponse.status(HttpStatus.OK).build();
-		} catch (IllegalArgumentException e) {
-			return ServerResponse.status(HttpStatus.BAD_REQUEST).build();
-		}
-	}
 }

@@ -1,4 +1,4 @@
-package expenses_tracker.app.auth;
+package expenses_tracker.app.session;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,26 +12,26 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 
 import reactor.core.publisher.Mono;
 
-@WebFluxTest(AuthRouter.class)
-public class AuthRouterTest {
+@WebFluxTest(SessionRouter.class)
+public class SessionRouterTest {
 	@Autowired
 	private WebTestClient webTestClient;
 
 	@MockBean
-	private AuthHandler authHandler;
+	private SessionHandler handler;
 
 	@BeforeEach
 	public void setup() {
-		Mockito.when(authHandler.login(ArgumentMatchers.any(ServerRequest.class)))
+		Mockito.when(handler.logout(ArgumentMatchers.any(ServerRequest.class)))
 				.thenReturn(Mono.empty());
 	}
 
 	@Test
-	public void shouldCallAuthHandlerOnLoginReq() {
-		webTestClient.post().uri("/auth/login")
+	public void shouldCallAuthHandlerOnLogoutReq() {
+		webTestClient.post().uri("/session/logout")
 				.exchange()
 				.expectStatus().isOk();
-		Mockito.verify(authHandler).login(ArgumentMatchers.any(ServerRequest.class));
+		Mockito.verify(handler).logout(ArgumentMatchers.any(ServerRequest.class));
 	}
 
 }
