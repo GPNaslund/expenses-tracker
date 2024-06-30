@@ -40,7 +40,7 @@ public class SessionHandlerTest {
 
 	@Test
 	public void shouldReturn400OnInvalidLogout() {
-		Mockito.doThrow(new IllegalArgumentException())
+		Mockito.doReturn(Mono.error(new IllegalArgumentException()))
 				.when(service).terminateSession(ArgumentMatchers.any(MultiValueMap.class));
 
 		serviceHandlerTester(Mono.empty(), HttpStatus.BAD_REQUEST);
@@ -59,5 +59,4 @@ public class SessionHandlerTest {
 						.equals(expectedStatus))
 				.verifyComplete();
 	}
-
 }
