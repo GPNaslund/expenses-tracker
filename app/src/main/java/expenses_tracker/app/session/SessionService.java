@@ -29,6 +29,7 @@ public class SessionService {
 	}
 
 	public Mono<Void> validateSession(MultiValueMap<String, HttpCookie> cookies) {
-		return Mono.empty();
+		HttpCookie sessionCookie = cookies.getFirst(sessionCookieName);
+		return repo.getSession(sessionCookie);
 	}
 }
