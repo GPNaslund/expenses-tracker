@@ -34,14 +34,14 @@ public class SessionHandlerTest {
 	}
 
 	@Test
-	public void shouldReturn200OnSuccessfulLogout() {
+	public void logout_shouldReturn200OnSuccess() {
 		Mockito.doReturn(Mono.empty()).when(service)
 				.terminateSession(ArgumentMatchers.any(MultiValueMap.class));
 		serviceHandlerTester(Mono.empty(), HttpStatus.OK);
 	}
 
 	@Test
-	public void shouldReturn400OnInvalidLogout() {
+	public void logout_shouldReturn400OnInvalidCredentials() {
 		Mockito.doReturn(Mono.error(new IllegalArgumentException()))
 				.when(service).terminateSession(ArgumentMatchers.any(MultiValueMap.class));
 

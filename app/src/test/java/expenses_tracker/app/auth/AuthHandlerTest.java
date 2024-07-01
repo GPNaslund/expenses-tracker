@@ -34,7 +34,7 @@ public class AuthHandlerTest {
 	}
 
 	@Test
-	public void shouldReturn200OnLoginWithValidCredentials() {
+	public void login_shouldReturn200OnValidCredentials() {
 		RegisteredUser user = new RegisteredUser("test", "test");
 		Mockito.when(service.validateCredentials(ArgumentMatchers.any(UserCredentials.class)))
 				.thenReturn(Mono.just(user));
@@ -43,7 +43,7 @@ public class AuthHandlerTest {
 	}
 
 	@Test
-	public void shouldReturn401OnLoginWithInvalidCredentials() {
+	public void login_shouldReturn401OnInvalidCredentials() {
 		Mockito.when(service.validateCredentials(ArgumentMatchers.any(UserCredentials.class)))
 				.thenReturn(Mono.empty());
 		UserCredentials credentials = new UserCredentials("test", "test");
@@ -52,7 +52,7 @@ public class AuthHandlerTest {
 	}
 
 	@Test
-	public void shouldReturn400OnLoginWithInvalidRequest() {
+	public void login_shouldReturn400OnInvalidRequest() {
 		authHandlerTester(Mono.empty(), HttpStatus.BAD_REQUEST);
 	}
 
