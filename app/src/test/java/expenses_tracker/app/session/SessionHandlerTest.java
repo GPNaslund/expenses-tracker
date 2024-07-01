@@ -35,6 +35,8 @@ public class SessionHandlerTest {
 
 	@Test
 	public void shouldReturn200OnSuccessfulLogout() {
+		Mockito.doReturn(Mono.empty()).when(service)
+				.terminateSession(ArgumentMatchers.any(MultiValueMap.class));
 		serviceHandlerTester(Mono.empty(), HttpStatus.OK);
 	}
 
