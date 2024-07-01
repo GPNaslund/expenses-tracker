@@ -11,4 +11,8 @@ public class SessionRepository {
 	public Mono<Void> deleteSession(HttpCookie cookie) {
 		return Mono.empty();
 	}
+
+	public Mono<Void> getSession(HttpCookie cookie) {
+		return Mono.empty();
+	}
 }

@@ -28,4 +28,7 @@ public class SessionService {
 				e -> Mono.error(new IllegalArgumentException()));
 	}
 
+	public Mono<Void> validateSession(MultiValueMap<String, HttpCookie> cookies) {
+		return Mono.empty();
+	}
 }

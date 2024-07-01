@@ -59,4 +59,16 @@ public class SessionServiceTest {
 
 		StepVerifier.create(result).expectNextCount(0).verifyComplete();
 	}
+
+	@Test
+	public void validateSession_shouldReturnErrorOnNonExistingSession() {
+		Mockito.doReturn(Mono.error(new IllegalArgumentException())).when(repo)
+				.getSession(ArgumentMatchers.any(HttpCookie.class));
+
+		MultiValueMap<String, HttpCookie> cookies = new LinkedMultiValueMap<>();
+		cookies.add("test", new HttpCookie("test", "test"));
+		Mono<Void> result = sut.validateSession(cookies);
+
+		StepVerifier.create(result).expectError(IllegalArgumentException.class).verify();
+	}
 }
