@@ -31,7 +31,7 @@ public class SessionServiceTest {
 	}
 
 	@Test
-	public void terminate_shouldReturnErrorOnNonExistingSession() {
+	public void terminateSession_shouldReturnErrorOnNonExistingSession() {
 		Mockito.doReturn(Mono.error(new IllegalArgumentException())).when(repo)
 				.deleteSession(ArgumentMatchers.any(HttpCookie.class));
 
@@ -42,12 +42,14 @@ public class SessionServiceTest {
 		StepVerifier.create(result).expectError(IllegalArgumentException.class).verify();
 	}
 
-	public SessionRepository getRepo() {
-		return repo;
-	}
+	@Test
+	public void terminateSession_shouldReturnEmptyMonoOnSuccess() {
+		Mockito.doReturn(Mono.empty()).when(repo).deleteSession(ArgumentMatchers.any(HttpCookie.class));
 
-	public SessionService getSut() {
-		return sut;
-	}
+		MultiValueMap<String, HttpCookie> cookies = new LinkedMultiValueMap<>();
+		cookies.add("test", new HttpCookie("test", "test"));
+		Mono<Void> result = sut.terminateSession(cookies);
 
+		StepVerifier.create(result).expectNextCount(0).verifyComplete();
+	}
 }

@@ -20,6 +20,9 @@ public class SessionService {
 
 	public Mono<Void> terminateSession(MultiValueMap<String, HttpCookie> cookies) {
 		HttpCookie sessionCookie = cookies.getFirst(sessionCookieName);
-		return repo.deleteSession(sessionCookie);
+		Mono<Void> result = repo.deleteSession(sessionCookie);
+		return result.onErrorResume(Exception.class,
+				e -> Mono.error(new IllegalArgumentException()));
 	}
+
 }
