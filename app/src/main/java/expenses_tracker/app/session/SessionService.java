@@ -30,6 +30,9 @@ public class SessionService {
 
 	public Mono<Void> validateSession(MultiValueMap<String, HttpCookie> cookies) {
 		HttpCookie sessionCookie = cookies.getFirst(sessionCookieName);
+		if (sessionCookie == null) {
+			return Mono.error(new IllegalArgumentException());
+		}
 		return repo.getSession(sessionCookie);
 	}
 }
