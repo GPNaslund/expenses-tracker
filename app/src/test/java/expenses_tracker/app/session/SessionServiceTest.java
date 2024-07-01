@@ -78,4 +78,15 @@ public class SessionServiceTest {
 		Mono<Void> result = sut.validateSession(cookies);
 		StepVerifier.create(result).expectError(IllegalArgumentException.class).verify();
 	}
+
+	@Test
+	public void validateSession_shouldReturnEmptyMonoOnValidSession() {
+		Mockito.doReturn(Mono.empty()).when(repo).getSession(ArgumentMatchers.any(HttpCookie.class));
+		MultiValueMap<String, HttpCookie> cookies = new LinkedMultiValueMap<>();
+		cookies.add("test", new HttpCookie("test", "test"));
+
+		Mono<Void> result = sut.validateSession(cookies);
+
+		StepVerifier.create(result).expectNextCount(0).verifyComplete();
+	}
 }
