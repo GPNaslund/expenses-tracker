@@ -71,4 +71,11 @@ public class SessionServiceTest {
 
 		StepVerifier.create(result).expectError(IllegalArgumentException.class).verify();
 	}
+
+	@Test
+	public void validateSession_shouldReturnErrorOnInvalidCookie() {
+		MultiValueMap<String, HttpCookie> cookies = new LinkedMultiValueMap<>();
+		Mono<Void> result = sut.validateSession(cookies);
+		StepVerifier.create(result).expectError(IllegalArgumentException.class).verify();
+	}
 }
